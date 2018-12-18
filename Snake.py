@@ -1,63 +1,54 @@
 from sense_hat import SenseHat
+from time import sleep
+
 sense = SenseHat()
-from time import *
 
-slug = [[2,4],[3,4],[4,4]]
-blue = (0, 0, 255)
-blank = (0, 0, 0)
-direction = "right"
+y=[255, 255, 0]
+x=[0, 0, 0]
 
+path= [y,y,y,x,x,x,x,x,
+       x,x,y,x,x,x,x,x,
+       x,x,y,x,y,y,y,x,
+       x,x,y,y,y,x,y,x,
+       x,x,x,x,x,x,y,x,
+       x,x,x,x,x,x,y,x,
+       x,x,x,x,x,x,y,y,
+       x,x,x,x,x,x,x,y,]
 
-def draw_slug():
-    for segment in slug:
-        sense.set_pixel(segment[0], segment[1], blue)
-        
+sense.set_pixels(path)
 
+y=[255, 255, 0]
+x=[0, 0, 0]
+b=[0, 0, 255]
 
-def move():
-    last = slug[-1]
-    first = slug[0]
-    next = list(last)
-    if direction == "right":
-        next[0] = last[0] + 1
-    slug.append(next)
-    sense.set_pixel(next[0], next[1], blue)
-    sense.set_pixel(first[0], first[1], blank)
-    slug.remove(first)
-    '''
-    if direction ==  "right":
-        if last[0] + 1 == 8:
-            next[0] = 0
-        else:
-            next[0] = last[0] + 1
-    elif direction == "left":
-        if last[0] - 1 == -1:
-            next[0] = 7
-        else:
-            next[0] = last[0] - 1 
-    elif direction == "down":
-        if last[1] + 1 == 8:
-            next[1] = 0
-        else:
-            next[1] = last[1] + 1
-    elif direction == "up":
-        if last[1] - 1 == -1:
-            next[1] = 7
-        else:
-            next[1] = last[1] - 1
-    '''
-    
-def joystick_moved(event):
-    global direction
-    direction = event.direction
-        
-sense.stick.direction_any = joystick_moved
-
-sense.clear()
-draw_slug()
+charx = 0
+chary = 0
 
 while True:
-    "move"
-
-
+    sense.set_pixels(path)
+    sense.set_pixel(charx, chary, b)
     
+    pitch = sense.get_orientation()['pitch']
+    roll = sense.get_orientation()['roll']
+    
+    print('Pitch:',pitch)
+    print('Roll:',roll)
+          
+    if 270 < pitch < 315 and charx < 7:
+          charx += 1
+    
+    if 45 < pitch < 90 and charx > 0:
+          charx -= 1
+          
+    if 45 < roll < 90 and chary < 7:
+          chary += 1
+          
+    if 270 < roll < 315 and chary < 7:
+          chary -= 1
+          
+    current=sense.get_pixel(charx, chary)
+    if current == x:
+          charx = 0
+          chary = 0
+          
+    sleep(0.4)
